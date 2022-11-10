@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: backend
+    build: ./backend
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8337:8000
+    working_dir: /app
+    restart: on-failure
+    env_file:
+      - ./backend/.env
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    env_file:
+      - ./backend/.env
+    restart: on-failure
+
+  blockchain:
+    container_name: blockchain
+    build: ./blockchain
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    volumes:
+      - ./blockchain:/app
+    working_dir: /app
+    restart: on-failure
+    env_file:
+      - ./blockchain/.env
+
+  blockchain_db:
+    container_name: blockchain_db
+    image: postgres
+    env_file:
+      - ./blockchain/.env
+    restart: on-failure
+
+#  redis:
+#    container_name: redis
+#    image: redis
+#    restart: on-failure
+#    ports:
+#      - 6379:6379
+#
+#  celery-beat:
+#    container_name: celery-beat
+#    build: ./backend
+#    command: celery -A apps.celery.celery_app beat -l info
+#    volumes:
+#      - ./backend:/app
+#    env_file:
+#      - ./backend/.env
+#
+#  celery-worker:
+#    container_name: celery-worker
+#    build: ./backend
+#    command: celery -A apps.celery.celery_app worker -P threads -c 1 -l info -Q default
+#    volumes:
+#      - ./backend:/app
+#    env_file:
+#      - ./backend/.env
+#
+#  price-getter:
+#    container_name: price-getter
+#    build: ./price-getter
+#    command: python main.py
+#    volumes:
+#      - ./price-getter:/app
+#    working_dir: /app
+#    restart: on-failure
+#    env_file:
+#      - ./price-getter/.env
