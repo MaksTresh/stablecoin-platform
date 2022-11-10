@@ -38,3 +38,8 @@ docker-compose down
 ```commandline
 docker-compose up
 ```
+- Фронт:
+```
+npm i --force
+expo start
+```
